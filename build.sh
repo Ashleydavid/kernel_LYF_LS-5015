@@ -49,19 +49,19 @@ if [[ -d ${UBER} ]]; then
 		rm -rf ${UBER}
 	fi
 else
-	git clone https://bitbucket.org/UBERTC/aarch64-linux-android-4.9-kernel.git $UBER
+	git clone https://github.com/AndroiableDroid/aarch64-linux-kernel-linaro-7.x.git $UBER
 fi
 }
 
 # Modify the following variable if you want to build
-export CROSS_COMPILE=$UBER/bin/aarch64-linux-android-
+export CROSS_COMPILE=$UBER/bin/aarch64-linaro-linux-gnu-
 export ARCH=arm64
 export SUBARCH=arm64
 export KBUILD_BUILD_USER="Faraz"
 export KBUILD_BUILD_HOST="TimeMachine"
 export USE_CCACHE=1
 BUILD_DIR=$KERNEL_DIR/build
-VERSION="X4"
+VERSION="X8"
 DATE=$(date -u +%Y%m%d-%H%M)
 ZIP_NAME=Nichrome-$DEVICE-$VERSION-$DATE
 
@@ -72,7 +72,7 @@ echo "             Compiling Nichrome kernel        "
 echo -e "****************************************************"
 echo -e "$nocol"
 rm -f $KERN_IMG
-make O=out test01a_msm_defconfig
+make O=out nichrome_defconfig
 make O=out $J
 if ! [ -a $KERN_IMG ];
 then
@@ -121,4 +121,5 @@ echo -e "$cyan*$nocol${green} ZIP LOCATION: ${BUILD_DIR}/${ZIP_NAME}.zip$nocol"
 echo -e "$cyan*$nocol${green} SIZE: $( du -h ${BUILD_DIR}/${ZIP_NAME}.zip | awk '{print $1}' )$nocol"
 echo -e "$cyan****************************************************************************************$nocol"
 fi
+
 

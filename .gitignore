@@ -150,6 +150,4 @@ dkms.conf
 
 #Out Folder
 out/
-*.img
-build/
-zImage
+arch/arm64/boot/dt.img

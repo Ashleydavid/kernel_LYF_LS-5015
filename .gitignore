@@ -14,7 +14,6 @@
 *.o.*
 *.a
 *.s
-*.ko
 *.so
 *.so.dbg
 *.mod.c
@@ -97,7 +96,6 @@ x509.genkey
 
 # Object files
 *.o
-*.ko
 *.obj
 *.elf
 
@@ -150,6 +148,4 @@ dkms.conf
 
 #Out Folder
 out/
-*.img
-build/
-zImage
+arch/arm64/boot/dt.img

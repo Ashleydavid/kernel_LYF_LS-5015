@@ -8,6 +8,7 @@ block=/dev/block/platform/soc.0/7824900.sdhci/by-name/boot;
 ## AnyKernel methods (DO NOT CHANGE)
 # set up extracted files and directories
 project=/tmp/anykernel/project/*;
+modules=/tmp/anykernel/modules/*
 bin=/tmp/anykernel/tools;
 split_img=/tmp/anykernel/split_img;
 patch=/tmp/anykernel/patch;
@@ -77,6 +78,9 @@ dump_boot;
 ramdisk;
 
 write_boot;
+
+# Copying Modules
+cp $modules /system/lib/modules/
 
 ## end install
 

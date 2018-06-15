@@ -100,6 +100,8 @@ struct cpufreq_policy {
 	 *     __cpufreq_governor(data, CPUFREQ_GOV_POLICY_EXIT);
 	 */
 	struct rw_semaphore	rwsem;
+
+	unsigned int util;
 };
 
 /* Only for ACPI */
@@ -164,6 +166,7 @@ static inline void disable_cpufreq(void) { }
 
 #define CPUFREQ_RELATION_L 0  /* lowest frequency at or above target */
 #define CPUFREQ_RELATION_H 1  /* highest frequency below or at target */
+#define CPUFREQ_RELATION_C 2  /* closest frequency to target */
 
 struct freq_attr {
 	struct attribute attr;
@@ -222,6 +225,7 @@ struct cpufreq_driver {
 	/* optional */
 	int	(*bios_limit)	(int cpu, unsigned int *limit);
 
+	unsigned int (*getavg) (struct cpufreq_policy *policy, unsigned int cpu);
 	int	(*exit)		(struct cpufreq_policy *policy);
 	int	(*suspend)	(struct cpufreq_policy *policy);
 	int	(*resume)	(struct cpufreq_policy *policy);
@@ -257,6 +261,8 @@ int cpufreq_register_driver(struct cpufreq_driver *driver_data);
 int cpufreq_unregister_driver(struct cpufreq_driver *driver_data);
 
 const char *cpufreq_get_current_driver(void);
+
+void cpufreq_notify_utilization(struct cpufreq_policy *policy, unsigned int load);
 
 static inline void cpufreq_verify_within_limits(struct cpufreq_policy *policy,
 		unsigned int min, unsigned int max)
@@ -404,6 +410,7 @@ int cpufreq_driver_target(struct cpufreq_policy *policy,
 int __cpufreq_driver_target(struct cpufreq_policy *policy,
 				   unsigned int target_freq,
 				   unsigned int relation);
+extern int __cpufreq_driver_getavg(struct cpufreq_policy *policy, unsigned int cpu);
 int cpufreq_register_governor(struct cpufreq_governor *governor);
 void cpufreq_unregister_governor(struct cpufreq_governor *governor);
 
@@ -415,7 +422,13 @@ void cpufreq_unregister_governor(struct cpufreq_governor *governor);
 #ifdef CONFIG_CPU_FREQ_GOV_PERFORMANCE
 extern struct cpufreq_governor cpufreq_gov_performance;
 #endif
-#ifdef CONFIG_CPU_FREQ_DEFAULT_GOV_PERFORMANCE
+/* 
+ * MSM kernels will only boot with performance as the default CPU governor,
+ * so don't let users choose default CPU governor other than performance
+ * since Android's init script will change the CPU governor after boot to
+ * the desired CPU governor.
+ */
+#if defined(CONFIG_ARCH_MSM) || defined(CONFIG_CPU_FREQ_DEFAULT_GOV_PERFORMANCE)
 #define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_performance)
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_POWERSAVE)
 extern struct cpufreq_governor cpufreq_gov_powersave;
@@ -432,9 +445,18 @@ extern struct cpufreq_governor cpufreq_gov_conservative;
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_INTERACTIVE)
 extern struct cpufreq_governor cpufreq_gov_interactive;
 #define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_interactive)
+#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_DARKNESS)
+extern struct cpufreq_governor cpufreq_gov_darkness;
+#define CPUFREQ_DEFAULT_GOVERNOR (&cpufreq_gov_darkness)
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_ELEMENTALX)
 extern struct cpufreq_governor cpufreq_gov_elementalx;
 #define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_elementalx)
+#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_IMPULSE)
+extern struct cpufreq_governor cpufreq_gov_impulse;
+#define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_impulse)
+#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_BARRY_ALLEN)
+extern struct cpufreq_governor cpufreq_gov_barry_allen;
+#define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_barry_allen)
 #endif
 
 /*********************************************************************

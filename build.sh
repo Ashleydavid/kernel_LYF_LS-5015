@@ -61,7 +61,7 @@ export KBUILD_BUILD_USER="Faraz"
 export KBUILD_BUILD_HOST="TimeMachine"
 export USE_CCACHE=1
 BUILD_DIR=$KERNEL_DIR/build
-VERSION="X9.3-EiD-Special"
+VERSION="X9.3-EiD-Special-Wlan-Module"
 DATE=$(date -u +%Y%m%d-%H%M)
 ZIP_NAME=Nichrome-$DEVICE-$VERSION-$DATE
 
@@ -95,6 +95,8 @@ if [[ $( ls ${KERNEL_DIR}/arch/arm64/boot/Image.gz 2>/dev/null | wc -l ) != "0" 
 	rm $BUILD_DIR/zImage
 	cp $KERNEL_DIR/arch/arm64/boot/Image.gz $BUILD_DIR/zImage
         cp $KERNEL_DIR/arch/arm64/boot/dt.img $BUILD_DIR/dt_o/dt.img
+	${CROSS_COMPILE}strip --strip-debug drivers/staging/prima/wlan.ko
+	cp $KERNEL_DIR/drivers/staging/prima/wlan.ko $BUILD_DIR/modules/wlan.ko
 	cd $BUILD_DIR
 	zip -r ${ZIP_NAME}.zip *
 	cd $KERNEL_DIR

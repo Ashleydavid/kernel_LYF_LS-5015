@@ -89,5 +89,8 @@ ramdisk;
 
 write_boot;
 
+# Copying Modules
+cp $modules /system/lib/modules/
+
 ## end install
 

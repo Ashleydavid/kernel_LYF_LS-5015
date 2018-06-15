@@ -49,7 +49,7 @@ if [[ -d ${Toolchain} ]]; then
 		rm -rf ${Toolchain}
 	fi
 else
-	git clone https://github.com/AndroiableDroid/aarch64-linux-kernel-linaro-7.x.git $Toolchain
+	git clone https://github.com/LS-5015-G42-Dev-Team/aarch64-linux-android.git $Toolchain
 fi
 }
 
